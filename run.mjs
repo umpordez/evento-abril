@@ -105,5 +105,5 @@ for (const file of files) {
         { value: 1, ...json }
     );
 
-    console.log(`Transf: ${res.id} - ${transf.status}`);
+    console.log(`Transf: ${res.id} - ${res.status}`);
 }
