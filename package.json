@@ -1,0 +1,13 @@
+{
+    "name": "evento-abril",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "run.js",
+    "scripts": {},
+    "author": "umpordez",
+    "license": "unlicensed",
+    "description": "se vc esta lendo isso, mande um #eumeimporto em seu PR :)",
+    "dependencies": {
+        "dotenv": "^16.4.7"
+    }
+}
