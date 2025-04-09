@@ -1,11 +1,8 @@
 {
     "pixAddressKeyType": "EMAIL",
-<<<<<<< HEAD
-    "pixAddressKey": "deividyz@gmail.com"
-=======
     "pixAddressKey": "deividyz@gmail.com",
     
     "pixAddressKeyType": "CHAVE",
     "pixAddressKey": "42531212-2ca9-4061-8e5b-c8181819cb81"
->>>>>>> 4d25bff (Add rafaelbernini.json key)
+
 }
