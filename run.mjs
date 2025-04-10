@@ -92,8 +92,37 @@ const client = new AsaasClient(
     process.env.ASAAS_ENV
 );
 
+const res = await client.doRequest('GET', '/finance/balance');
+let totalBalance = res.balance - 10; // leave R$ 10 for me :D
+
 const files = await fs.promises.readdir('./pix-keys');
+
+const transfers = (await fs.promises.readFile('./transfers'))
+    .toString()
+    .split('\n');
+
+let totalPeopleToTransf = files.length;
+
 for (const file of files) {
+    if (transfers.includes(file)) {
+        console.log(`Skip: ${file}...`);
+        totalPeopleToTransf--;
+        continue;
+    }
+
+    const maxForEach = Number((totalBalance / totalPeopleToTransf).toFixed(2));
+
+    console.log(`Total balance: R$ ${totalBalance}`);
+    console.log(`Max for each: R$ ${maxForEach}`);
+
+    const valueToTransf = Number((Math.random() * maxForEach).toFixed(2));
+    totalBalance -= valueToTransf;
+
+    transfers.push(file);
+    await fs.promises.writeFile('./transfers', transfers.join('\n'));
+
+    console.log(`Transf: R$ ${valueToTransf} to ${file}...`);
+
     const json = JSON.parse((await fs
         .promises
         .readFile(`./pix-keys/${file}`)
@@ -106,4 +135,10 @@ for (const file of files) {
     );
 
     console.log(`Transf: ${res.id} - ${res.status}`);
+    totalPeopleToTransf--;
+
+    console.log('');
+    console.log('---');
+    console.log('');
+
 }
