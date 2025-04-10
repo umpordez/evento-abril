@@ -106,6 +106,7 @@ console.log('');
 
 async function doTransf() {
     let totalPeopleToTransf = files.length;
+
     for (const file of files) {
         if (transfers.includes(file)) {
             console.log(`Skip: ${file}...`);
@@ -118,12 +119,14 @@ async function doTransf() {
         console.log(`Total balance: R$ ${totalBalance}`);
         console.log(`Max for each: R$ ${maxForEach}`);
 
-        const valueToTransf = Number((Math.random() * maxForEach).toFixed(2));
+        const valueToTransf = Math.max(
+            1,
+            Number((Math.random() * maxForEach).toFixed(2))
+        );
+
         totalBalance -= valueToTransf;
 
         transfers.push(file);
-        await fs.promises.writeFile('./transfers', transfers.join('\n'));
-
         console.log(`Transf: R$ ${valueToTransf} to ${file}...`);
 
         const json = JSON.parse((await fs
@@ -134,8 +137,10 @@ async function doTransf() {
         const res = await client.doRequest(
             'POST',
             '/transfers',
-            { value: 1, ...json }
+            { value: valueToTransf, ...json }
         );
+
+        await fs.promises.writeFile('./transfers', transfers.join('\n'));
 
         console.log(`Transf: ${res.id} - ${res.status}`);
         totalPeopleToTransf--;
@@ -144,7 +149,12 @@ async function doTransf() {
         console.log('---');
         console.log('');
 
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 1000);
+        });
     }
 }
 
-// await doTransf();
+await doTransf();
