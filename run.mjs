@@ -101,44 +101,50 @@ const transfers = (await fs.promises.readFile('./transfers'))
     .toString()
     .split('\n');
 
-let totalPeopleToTransf = files.length;
+console.log(`Available balance (initial) R$ ${totalBalance}`);
+console.log('');
 
-for (const file of files) {
-    if (transfers.includes(file)) {
-        console.log(`Skip: ${file}...`);
+async function doTransf() {
+    let totalPeopleToTransf = files.length;
+    for (const file of files) {
+        if (transfers.includes(file)) {
+            console.log(`Skip: ${file}...`);
+            totalPeopleToTransf--;
+            continue;
+        }
+
+        const maxForEach = Number((totalBalance / totalPeopleToTransf).toFixed(2));
+
+        console.log(`Total balance: R$ ${totalBalance}`);
+        console.log(`Max for each: R$ ${maxForEach}`);
+
+        const valueToTransf = Number((Math.random() * maxForEach).toFixed(2));
+        totalBalance -= valueToTransf;
+
+        transfers.push(file);
+        await fs.promises.writeFile('./transfers', transfers.join('\n'));
+
+        console.log(`Transf: R$ ${valueToTransf} to ${file}...`);
+
+        const json = JSON.parse((await fs
+            .promises
+            .readFile(`./pix-keys/${file}`)
+        ).toString());
+
+        const res = await client.doRequest(
+            'POST',
+            '/transfers',
+            { value: 1, ...json }
+        );
+
+        console.log(`Transf: ${res.id} - ${res.status}`);
         totalPeopleToTransf--;
-        continue;
+
+        console.log('');
+        console.log('---');
+        console.log('');
+
     }
-
-    const maxForEach = Number((totalBalance / totalPeopleToTransf).toFixed(2));
-
-    console.log(`Total balance: R$ ${totalBalance}`);
-    console.log(`Max for each: R$ ${maxForEach}`);
-
-    const valueToTransf = Number((Math.random() * maxForEach).toFixed(2));
-    totalBalance -= valueToTransf;
-
-    transfers.push(file);
-    await fs.promises.writeFile('./transfers', transfers.join('\n'));
-
-    console.log(`Transf: R$ ${valueToTransf} to ${file}...`);
-
-    const json = JSON.parse((await fs
-        .promises
-        .readFile(`./pix-keys/${file}`)
-    ).toString());
-
-    const res = await client.doRequest(
-        'POST',
-        '/transfers',
-        { value: 1, ...json }
-    );
-
-    console.log(`Transf: ${res.id} - ${res.status}`);
-    totalPeopleToTransf--;
-
-    console.log('');
-    console.log('---');
-    console.log('');
-
 }
+
+// await doTransf();
